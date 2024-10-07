@@ -1,18 +1,21 @@
-
+import { currentUser } from "@clerk/nextjs/server";
+import { redirect } from "next/navigation";
 import { Fragment } from "react";
 
 async function Home() {
-  // const user = await currentUser();
+  const user = await currentUser();
 
-  // if (!user) {
-  //   redirect("/sign-up");
-  // }
+  if (!user) {
+    redirect("/sign-up");
+  }else{
+    console.log("user:: ",user);
+  }
 
   return (
     <Fragment>
-      <section className="relative w-full h-full min-h-screen">
-        
-      </section>
+      <main className="">
+        hello
+      </main>
     </Fragment>
   );
 }
