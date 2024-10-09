@@ -8,15 +8,10 @@ import {
   SelectContent,
   SelectGroup,
   SelectItem,
-  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
 import { FiLoader } from "react-icons/fi";
-
-interface FormErrors {
-  [key: string]: string;
-}
 
 function CommonForm({
   formControls,
@@ -33,8 +28,21 @@ function CommonForm({
   btnType,
   isDisabled,
 }: CommonFormProps) {
+  const [formErrors, setFormErrors] = useState<string[]>([]); // To store Zod validation errors
+
   const handleFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
+    // zod validations
+    const result = schema.safeParse(formData);
+    if (!result.success) {
+      // collect validation errors
+      const errors = result.error.errors.map((err) => err.message);
+      setFormErrors(errors);
+      return;
+    }
+
+    // Continue with form submission if valid
     onSubmit(formData);
   };
 
@@ -183,6 +191,15 @@ function CommonForm({
           </Button>
         )}
       </section>
+
+      {/* Render any validation errors */}
+      {formErrors.length > 0 && (
+        <ul className="text-red-500 mt-4">
+          {formErrors.map((error, index) => (
+            <li key={index}>{error}</li>
+          ))}
+        </ul>
+      )}
     </form>
   );
 }

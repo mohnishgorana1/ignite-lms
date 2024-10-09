@@ -23,7 +23,6 @@ function OnboardForm({ currentUser }: any) {
 
   const [isCreatingProfile, setIsCreatingProfile] = useState(false);
 
-  const [formErrors, setFormErrors] = useState<string[]>([]); // To store Zod validation errors
 
   // Check if all required fields are filled
   const isFormValid = Object.values(onboardFormData).every(
@@ -32,16 +31,7 @@ function OnboardForm({ currentUser }: any) {
 
   const handleOnboarding: SubmitHandler<OnboardFormInputs> = async () => {
     try {
-      // zod validations
-      const result = onboardSchema.safeParse(onboardFormData);
-      if (!result.success) {
-        // collect validation errors
-        const errors = result.error.errors.map((err) => err.message);
-        setFormErrors(errors);
-        return;
-      }
-
-      // Continue with form submission if valid
+     
       if (!currentUser) router.refresh();
 
       const data = {
@@ -88,14 +78,7 @@ function OnboardForm({ currentUser }: any) {
           isDisabled={!isFormValid}
         />
 
-        {/* Render any validation errors */}
-        {formErrors.length > 0 && (
-          <ul className="text-red-500 mt-4">
-            {formErrors.map((error, index) => (
-              <li key={index}>{error}</li>
-            ))}
-          </ul>
-        )}
+        
       </div>
     </section>
   );
