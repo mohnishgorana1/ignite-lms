@@ -12,6 +12,11 @@ function Header({ currentUser }: any) {
       show: currentUser,
     },
     {
+      label: "Dashboard",
+      path: "/dashboard",
+      show: currentUser,
+    },
+    {
       label: "Profile",
       path: "/profile",
       show: true,
@@ -46,10 +51,16 @@ function Header({ currentUser }: any) {
             <GiHamburgerMenu className="text-white text-xl" />
           </SheetTrigger>
 
-          <SheetContent side={"right"} className="bg-[#020202] text-white w-full h-[100vh]">
+          <SheetContent
+            side={"right"}
+            className="bg-[#020202] text-white w-full h-[100vh]"
+          >
             <div className="h-full flex flex-col justify-between gap-y-8 py-6 ">
               <div className="flex gay-y-12 flex-col">
-                <Link href={"/"} className="flex items-center justify-center w-full mb-12">
+                <Link
+                  href={"/"}
+                  className="flex items-center justify-center w-full mb-12"
+                >
                   <h3 className="text-[30px] sm:text-4xl font-extrabold tracking-wide brightness-125">
                     <span className="bg-gradient-to-r from-blue-500 via-purple-500 to-red-500 bg-clip-text text-transparent flex gap-x-1 h-12 ">
                       <span>Ignite</span>

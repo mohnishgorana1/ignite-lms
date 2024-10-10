@@ -52,3 +52,14 @@ interface CreateProfile {
   userAuthId: string;
   email: string;
 }
+
+interface CreateCourse {
+  instructor: string;
+  instructorAuthId: string;
+  title: string;
+  welcomeMessage: string;
+  description: string;
+  category: string;
+  pricing: number;
+  courseThumbnailFile: File | null;
+}

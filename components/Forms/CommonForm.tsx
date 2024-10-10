@@ -1,8 +1,8 @@
 import { CommonFormProps, FormControl } from "@/types";
 import React, { useState } from "react";
-import { Button } from "./ui/button";
-import { Label } from "./ui/label";
-import { Input } from "./ui/input";
+import { Button } from "../ui/button";
+import { Label } from "../ui/label";
+import { Input } from "../ui/input";
 import {
   Select,
   SelectContent,
@@ -12,6 +12,10 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { FiLoader } from "react-icons/fi";
+
+interface FormErrors {
+  [key: string]: string;
+}
 
 function CommonForm({
   formControls,
@@ -37,10 +41,18 @@ function CommonForm({
     const result = schema.safeParse(formData);
     if (!result.success) {
       // collect validation errors
-      const errors = result.error.errors.map((err) => err.message);
+      const errors: FormErrors = {};
+
+      result.error.errors.forEach((err) => {
+        const fieldName = err.path[0] as string;
+        errors[fieldName] = err.message;
+      });
       setFormErrors(errors);
       return;
     }
+
+    // Clear previous errors
+    setFormErrors({});
 
     // Continue with form submission if valid
     onSubmit(formData);
@@ -49,34 +61,42 @@ function CommonForm({
   const renderControlByComponentType = (getCurrentControl: FormControl) => {
     let content = null;
 
+    const fieldError = formErrors[getCurrentControl.name];
+
     switch (getCurrentControl.componentType) {
       case "INPUT":
         content = (
           <div
-            key={"input"}
+            key={getCurrentControl.name}
             className="grid grid-cols-3 md:grid-cols-12 w-full items-center justify-between mt-8"
           >
             <Label className="col-span-1 md:col-span-3 text-sm sm:text-lg md:text-xl text-start ">
               {getCurrentControl.label}
             </Label>
+
             <Input
-              type="text"
+              type={getCurrentControl.type}
+              min={getCurrentControl.type === "number" ? "0" : undefined}
               required={getCurrentControl?.required}
               disabled={getCurrentControl.disabled}
               placeholder={getCurrentControl.placeholder}
               name={getCurrentControl.name}
               id={getCurrentControl.name}
               value={formData?.[getCurrentControl.name] || ""}
-              onChange={(event) =>
-                setFormData &&
+              onChange={(event) => {
+                const { name, value, type } = event.target;
+                let newValue: any = value;
+                if (type === "number") {
+                  newValue = value === "" ? "" : Number(value);
+                }
                 setFormData({
                   ...formData,
-                  [event.target.name]: event.target.value,
-                })
-              }
+                  [name]: newValue,
+                });
+              }}
               className="col-span-2 md:col-span-9 min-w-full rounded-md h-[40px] sm:h-[50px] md:h-[55px] px-4 border 
-                                    bg-[#101213] text-xm md:text-lg outline-none drop-shadow-sm transition-all duration-200 ease-in-out focus:bg-[#333637]  focus:drop-shadow-lg focus-visible:outline-none 
-                                    focus-visible:ring-0 focus-visible:ring-offset-0"
+                                      bg-[#101213] text-xs md:text-sm outline-none drop-shadow-sm transition-all duration-200 ease-in-out focus:bg-[#333637]  focus:drop-shadow-lg focus-visible:outline-none 
+                                      focus-visible:ring-0 focus-visible:ring-offset-0"
             />
           </div>
         );
@@ -85,7 +105,7 @@ function CommonForm({
       case "FILE":
         content = (
           <Label
-            key={"file"}
+            key={getCurrentControl.name}
             htmlFor={getCurrentControl.name}
             className="flex bg-[#101213] items-center px-3 py-3 mx-auto mt-6 text-center
                              border-2 border-dashed rounded-lg cursor-pointer"
@@ -104,7 +124,7 @@ function CommonForm({
         content = (
           <div
             className="grid grid-cols-3 md:grid-cols-12 w-full items-center justify-between mt-8"
-            key={"select"}
+            key={getCurrentControl.name}
           >
             <Label className="col-span-1 md:col-span-3 text-sm sm:text-lg md:text-xl  text-start">
               {getCurrentControl.label}
@@ -148,7 +168,10 @@ function CommonForm({
 
       default:
         content = (
-          <div className="relative flex items-center mt-8" key={"default"}>
+          <div
+            className="relative flex items-center mt-8"
+            key={getCurrentControl.name}
+          >
             <Input
               type="text"
               disabled={getCurrentControl.disabled}
@@ -193,9 +216,10 @@ function CommonForm({
       </section>
 
       {/* Render any validation errors */}
-      {formErrors.length > 0 && (
+      {/* Render any validation errors */}
+      {Object.keys(formErrors).length > 0 && (
         <ul className="text-red-500 mt-4">
-          {formErrors.map((error, index) => (
+          {Object.values(formErrors).map((error, index) => (
             <li key={index}>{error}</li>
           ))}
         </ul>

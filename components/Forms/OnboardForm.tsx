@@ -2,12 +2,12 @@
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 // import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import CommonForm from "./CommonForm";
 import { onboardFormControls, initialOnboardFormData } from "@/lib/constants";
 import { onboardSchema } from "@/lib/validations/onboardSchema";
 import { SubmitHandler } from "react-hook-form";
 import { createProfileAction } from "@/actions/user.action";
 import { toast } from "sonner";
+import CommonForm from "./CommonForm";
 
 interface OnboardFormInputs {
   name: string;
