@@ -30,11 +30,6 @@ function CreateCourseForm({ profileInfo }: any) {
   const [isCreatingCourse, setIsCreatingCourse] = useState(false);
 
   // Check if all required fields are filled
-  //   const isFormValid = Object.values(createCourseFormData).every(
-  //     (fieldValue) => fieldValue !== "" && fieldValue !== null
-  //   );
-
-  // Check if all required fields are filled
   const isFormValid = Object.keys(createCourseFormData).every((key) => {
     const value = createCourseFormData[key as keyof CreateCourseFormInputs];
     if (key === "courseThumbnail") {
@@ -64,6 +59,8 @@ function CreateCourseForm({ profileInfo }: any) {
 
       if (!createCourseFormData?.courseThumbnail) return;
 
+      setIsCreatingCourse(true);
+
       const newCourseFormData = new FormData();
       newCourseFormData.append("instructor", profileInfo?._id);
       newCourseFormData.append("instructorAuthId", profileInfo?.userAuthId);
@@ -83,7 +80,7 @@ function CreateCourseForm({ profileInfo }: any) {
       try {
         console.log("necopursefoprm", newCourseFormData);
 
-        const newCourse = await axios.post(
+        const response = await axios.post(
           "/api/courses/create-course",
           newCourseFormData,
           {
@@ -93,14 +90,22 @@ function CreateCourseForm({ profileInfo }: any) {
           }
         );
 
-        console.log("newCourse", newCourse);
+        if (response?.data?.success === true) {
+          toast.success("Course Created Successfully");
+          setCreateCourseFormData(initialCreateCourseFormData)
+        } else {
+          toast.error("Can't Create Course");
+        }
+
+        console.log("newCourse", response?.data?.newCourse);
       } catch (error) {
         console.log("Error Creating Course", error);
-        toast.error("Error Creating Course");
+        toast.error("Something Went Wrong");
       }
     } catch (error) {
       console.error("Error:", error);
     } finally {
+      setIsCreatingCourse(false);
     }
   };
   return (

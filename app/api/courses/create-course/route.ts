@@ -21,10 +21,9 @@ export async function POST(req: Request, res: Response) {
   const category = formData.get("category") as string;
   const pricing = formData.get("pricing") as string;
 
-
   console.log(formData);
 
-    // validations
+  // validations
 
   if (
     !instructor ||
@@ -38,17 +37,17 @@ export async function POST(req: Request, res: Response) {
   ) {
     return new Response(
       JSON.stringify({
+        success: false,
         message: "Invalid or Missing Data : Can't Create Course",
       }),
       { status: 400 }
     );
   }
 
-
   try {
     // file handling Uploading to Cloudinary
     console.log("uploading to cloudinary");
-    
+
     const data: any = await UploadFileToCloudinary(
       courseThumbnailFile,
       "IgniteLMS"
@@ -105,7 +104,7 @@ export async function POST(req: Request, res: Response) {
     console.log("Error: Can't Create Course", error);
 
     return new Response(
-      JSON.stringify({ message: "Error: Can't Create Course" }),
+      JSON.stringify({ success: false, message: "Error: Can't Create Course" }),
       { status: 500 }
     );
   }
