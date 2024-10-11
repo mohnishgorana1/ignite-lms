@@ -2,74 +2,49 @@
 
 import dbConnect from "@/lib/dbConnect";
 import Course from "@/models/course.model";
-import { CreateCourse } from "@/types";
-import { revalidatePath } from "next/cache";
 
-export const createCourseAction = async (
-  newCourseFormData: CreateCourse,
-  pathToRevalidate: string
-) => {
-  console.log("newCoursefromData", newCourseFormData);
+export const fetchAllCourseAction = async () => {
+  await dbConnect();
+  const courseList = await Course.find().populate("instructor").exec();
 
-  const {
-    instructor,
-    instructorAuthId,
-    title,
-    welcomeMessage,
-    description,
-    category,
-    pricing,
-    courseThumbnailFile,
-  } = newCourseFormData;
+  if (!courseList) {
+    return {
+      status: 500,
+      success: false,
+      message: `No Course Found`,
+      courseList: JSON.parse(JSON.stringify([])),
+    };
+  }
 
+  console.log("Courselist", courseList);
 
-
-  return "HELLO";
+  return {
+    status: 200,
+    success: true,
+    message: `Course Created Successfully`,
+    courseList: JSON.parse(JSON.stringify(courseList)),
+  };
 };
 
+export const fetchSingleCourseAction = async (courseId: string) => {
+  await dbConnect();
+  const course = await Course.findById(courseId).populate("instructor").exec();
 
-  //   if (
-  //     !instructor ||
-  //     !instructorAuthId ||
-  //     !title ||
-  //     !welcomeMessage ||
-  //     !description ||
-  //     !category ||
-  //     !pricing ||
-  //     !courseThumbnailFile
-  //   ) {
-  //     return {
-  //       status: 500,
-  //       success: false,
-  //       message: `Error Creating Course : Invalid Data Passed`,
-  //     };
-  //   }
+  if (!course) {
+    return {
+      status: 500,
+      success: false,
+      message: `No Such Course Found`,
+      course: JSON.parse(JSON.stringify([])),
+    };
+  }
 
+  console.log("course", course);
 
-  //   try {
-  //     await dbConnect();
-  //     const newCourse = await Course.create(data);
-  //     if (!newCourse) {
-  //       return {
-  //         status: 500,
-  //         success: false,
-  //         message: `Can't Create Your Course : Please try again later!`,
-  //       };
-  //     }
-  //     console.log("New User", newCourse);
-  //     revalidatePath(pathToRevalidate);
-
-  //     return {
-  //       status: 200,
-  //       success: true,
-  //       message: `Course Created Successfully`,
-  //       newCourse: JSON.parse(JSON.stringify(newCourse)),
-  //     };
-  //   } catch (error) {
-  //     console.log("Error Creating Course", error);
-  //     return {
-  //       status: 500,
-  //       success: false,
-  //       message: `Error Creating Course ${error}`,
-  //     };
-  //   }
+  return {
+    status: 200,
+    success: true,
+    message: `Course Created Successfully`,
+    course: JSON.parse(JSON.stringify(course)),
+  };
+};

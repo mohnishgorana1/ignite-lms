@@ -1,4 +1,6 @@
+import { fetchAllCourseAction } from "@/actions/course.action";
 import { fetchProfileAction } from "@/actions/user.action";
+import CourseListing from "@/components/CourseListing";
 import { Button } from "@/components/ui/button";
 import { currentUser } from "@clerk/nextjs/server";
 import Link from "next/link";
@@ -11,6 +13,10 @@ async function CoursesListingPage() {
   const user = await currentUser();
 
   const profileInfo = await fetchProfileAction(user?.id);
+
+  const courses = await fetchAllCourseAction();
+  console.log("c", courses);
+
   return (
     <main className="w-full my-2 flex flex-col justify-between">
       <header className="flex w-full justify-between">
@@ -23,6 +29,11 @@ async function CoursesListingPage() {
           </Link>
         )}
       </header>
+
+      {/* course listing */}
+      <section className="mt-8 w-full py-4">
+        <CourseListing courses = {courses.courseList}/>
+      </section>
     </main>
   );
 }
