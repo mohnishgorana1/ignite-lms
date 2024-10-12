@@ -48,3 +48,80 @@ export const fetchSingleCourseAction = async (courseId: string) => {
     course: JSON.parse(JSON.stringify(course)),
   };
 };
+
+export const updateSingleCoursePricingAction = async (
+  courseId: string,
+  priceToUpdate: string | number,
+  pathToRevalidate: string
+) => {
+  await dbConnect();
+  const updatedCourse = await Course.findByIdAndUpdate(
+    courseId,
+    {
+      pricing: Number(priceToUpdate),
+    },
+    {
+      new: true,
+    }
+  );
+
+  if (!updatedCourse) {
+    return {
+      status: 500,
+      success: false,
+      message: `No Such Course Found`,
+      course: JSON.parse(JSON.stringify([])),
+    };
+  }
+
+  console.log("updated price", updatedCourse);
+
+  return {
+    status: 200,
+    success: true,
+    message: `Course Created Successfully`,
+    course: JSON.parse(JSON.stringify(updatedCourse)),
+  };
+};
+
+export const updateSingleCourseDetailsAction = async (
+  courseId: string,
+  courseUpdateData: any,
+  pathToRevalidate: string
+) => {
+  await dbConnect();
+  const { title, description, category, welcomeMessage, pricing } =
+    courseUpdateData;
+
+  const updatedCourse = await Course.findByIdAndUpdate(
+    courseId,
+    {
+      title,
+      description,
+      category,
+      welcomeMessage,
+      pricing,
+    },
+    {
+      new: true,
+    }
+  );
+
+  if (!updatedCourse) {
+    return {
+      status: 500,
+      success: false,
+      message: `No Such Course Found`,
+      course: JSON.parse(JSON.stringify([])),
+    };
+  }
+
+  console.log("updated price", updatedCourse);
+
+  return {
+    status: 200,
+    success: true,
+    message: `Course Created Successfully`,
+    course: JSON.parse(JSON.stringify(updatedCourse)),
+  };
+};

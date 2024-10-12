@@ -2,8 +2,9 @@ import Image from "next/image";
 import React from "react";
 import { Button } from "./ui/button";
 import Link from "next/link";
+import { redirect } from "next/navigation";
 
-function CourseDetailsComponent({ course }: any) {
+function CourseDetailsComponent({ course, profileInfo }: any) {
   const {
     _id,
     instructor,
@@ -27,7 +28,16 @@ function CourseDetailsComponent({ course }: any) {
           <h3 className="text-sm sm:text-lg opacity-70 mt-8">
             {welcomeMessage}
           </h3>
-          <p className="font-sans opacity-90 font-semibold">{category}</p>
+          <span className="flex md:flex-col justify-between gap-y-2">
+            <p className="font-sans font-semibold brightness-125 text-white ">{category}</p>
+            {instructor._id === profileInfo._id && (
+              <Link href={`/courses/${_id}/manage-course`} className="mt-5">
+                <Button className="h-8 border border-pink-500 text-pink-500 font-semibold hover:bg-pink-700 hover:text-white duration-200 ease-in-out">
+                  Manage Course
+                </Button>
+              </Link>
+            )}
+          </span>
         </div>
       </section>
 
@@ -45,9 +55,11 @@ function CourseDetailsComponent({ course }: any) {
               Price:
               <span className="font-bold"> ₹ {pricing}</span>
             </p>
-            <Button className="border border-green-500 text-green-500 font-semibold hover:bg-green-700 hover:text-white duration-200 ease-in-out">
-              Enroll Now
-            </Button>
+            <Link href={`/courses/${_id}/view-course`}>
+              <Button className="border border-green-500 text-green-500 font-semibold hover:bg-green-700 hover:text-white duration-200 ease-in-out">
+                Enroll Now
+              </Button>
+            </Link>
           </div>
         </div>
         <div className="md:col-span-5 flex flex-col gap-y-5">

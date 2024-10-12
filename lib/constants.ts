@@ -86,3 +86,51 @@ export const createCourseFormControls: FormControl[] = [
     required: true,
   },
 ];
+
+
+
+
+//                      update course
+export const updateCourseDetailsFormControls: FormControl[] = [
+  {
+    componentType: "INPUT",
+    name: "title",
+    label: "Title",
+    placeholder: "Select Course Title",
+    type: "text",
+    required: true,
+    disabled: true,
+  },
+  {
+    componentType: "INPUT",
+    name: "description",
+    label: "Description",
+    placeholder: "Enter Course Description",
+    type: "text",
+    required: true,
+  },
+  {
+    componentType: "INPUT",
+    name: "category",
+    label: "Category",
+    placeholder: "Enter Course Category",
+    type: "text",
+    required: true,
+  },
+  {
+    componentType: "INPUT",
+    name: "welcomeMessage",
+    label: "Welcome Message",
+    placeholder: "Set a Welcome Message",
+    type: "text",
+    required: true,
+  },
+  {
+    componentType: "INPUT",
+    name: "pricing",
+    label: "Price (INR)",
+    placeholder: "Set a Course Price (INR)",
+    type: "number",
+    required: true,
+  },
+];

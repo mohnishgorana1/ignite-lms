@@ -1,0 +1,25 @@
+import { z } from "zod";
+
+export const updateCourseSchema = z.object({
+  title: z
+    .string()
+    .min(3, "Title must be at least 3 characters")
+    .max(150, "Title must be at most 50 characters long"),
+
+  description: z
+    .string()
+    .min(10, "Description must be at least 15 characters")
+    .max(1000, "Description must be at most 500 characters long"),
+
+  category: z
+    .string()
+    .min(3, "Category must be at least 10 characters")
+    .max(50, "Category must be at most 20 characters long"),
+
+  welcomeMessage: z
+    .string()
+    .min(3, "Welcome Message must be at least 10 characters")
+    .max(500, "Welcome Message must be at most 50 characters long"),
+
+  pricing: z.number().min(0, "Pricing must be a positive number"),
+});
