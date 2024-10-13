@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 
 export interface ILesson extends Document {
-  title: string;
+  lessonTitle: string;
   lessonDescription: string;
 
   lessonUrl: {
@@ -21,7 +21,7 @@ export interface ILesson extends Document {
 }
 
 const lessonSchema = new mongoose.Schema<ILesson>({
-  title: {
+  lessonTitle: {
     type: String,
     required: [true, "Lesson title is required"],
     trim: true,

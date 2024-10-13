@@ -2,6 +2,9 @@
 
 import dbConnect from "@/lib/dbConnect";
 import Course from "@/models/course.model";
+import Module from "@/models/module.model"; // Ensure Module model is imported
+import Lesson from "@/models/lesson.model"; // Ensure Lesson model is imported
+import { revalidatePath } from "next/cache";
 
 export const fetchAllCourseAction = async () => {
   await dbConnect();
@@ -79,7 +82,7 @@ export const updateSingleCoursePricingAction = async (
   return {
     status: 200,
     success: true,
-    message: `Course Created Successfully`,
+    message: `Course Price Updated Successfully`,
     course: JSON.parse(JSON.stringify(updatedCourse)),
   };
 };
@@ -116,12 +119,137 @@ export const updateSingleCourseDetailsAction = async (
     };
   }
 
-  console.log("updated price", updatedCourse);
+  console.log("updated course details", updatedCourse);
+
+  return {
+    status: 200,
+    success: true,
+    message: `Course Updated Successfully`,
+    course: JSON.parse(JSON.stringify(updatedCourse)),
+  };
+};
+
+export const addModuleToCourseAction = async (
+  data: any,
+  pathToRevalidate: string
+) => {
+  await dbConnect();
+  const { title, associatedCourse } = data;
+
+  try {
+    const newModule = await Module.create({
+      title,
+      associatedCourse,
+    });
+
+    // Find the course by the associatedCourse ID and update it
+
+    const updatedCourse = await Course.findByIdAndUpdate(
+      associatedCourse,
+      { $push: { modules: newModule._id } }, // Add the new module to the course's modules array
+      { new: true } // Return the updated course
+    ).populate("modules");
+
+    if (!updatedCourse) {
+      return {
+        status: 500,
+        success: false,
+        message: `No Such Course Found`,
+        course: JSON.parse(JSON.stringify([])),
+      };
+    }
+
+    console.log("updated course details after module added", updatedCourse);
+
+    revalidatePath(pathToRevalidate);
+    return {
+      status: 200,
+      success: true,
+      message: `Course Updated Successfully`,
+      course: JSON.parse(JSON.stringify(updatedCourse)),
+    };
+  } catch (error) {
+    console.error("Error adding module to course:", error);
+    return {
+      status: 500,
+      success: false,
+      message: `Error adding module to course`,
+      course: JSON.parse(JSON.stringify([])),
+    };
+  }
+};
+
+export const fetchCourseModulesAndLecturesAction = async (courseId: string) => {
+  await dbConnect();
+
+  const fetchedCourse = await Course.findById(courseId)
+    .populate({
+      path: "modules",
+      model: "Module", // Explicitly reference the "Module" model
+      populate: {
+        path: "lessons",
+        model: "Lesson",
+      },
+    })
+    .exec();
+
+  if (!fetchedCourse) {
+    return {
+      status: 500,
+      success: false,
+      message: `No Such Course Found`,
+      course: JSON.parse(JSON.stringify([])),
+    };
+  }
+
+  console.log(" fetched course module details", fetchedCourse);
 
   return {
     status: 200,
     success: true,
     message: `Course Created Successfully`,
-    course: JSON.parse(JSON.stringify(updatedCourse)),
+    course: JSON.parse(JSON.stringify(fetchedCourse)),
   };
+};
+
+export const toggleFreePreviewAction = async (
+  lessonId: string,
+  toggleStatus: boolean
+) => {
+  await dbConnect();
+
+  try {
+    const lesson = await Lesson.findByIdAndUpdate(
+      lessonId,
+      { freePreview: toggleStatus },
+      { new: true }
+    )
+
+    if (!lesson) {
+      return {
+        status: 500,
+        success: false,
+        message: `No Such Lesson Found`,
+        course: JSON.parse(JSON.stringify([])),
+      };
+    }
+
+    console.log("updated Lesson Free Preview", lesson);
+
+
+    return {
+      status: 200,
+      success: true,
+      message: `Free Preview Status Updated Successfully`,
+      lesson: JSON.parse(JSON.stringify(lesson)),
+    };
+  } catch (error) {
+    console.error("Error Toggling Free Preview Status", error);
+    return {
+      status: 500,
+      success: false,
+      message: `Error Toggling Free Preview Status`,
+      course: JSON.parse(JSON.stringify([])),
+    };
+  }
 };
