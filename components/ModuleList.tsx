@@ -9,14 +9,16 @@ import { Button } from "./ui/button";
 import AddLectureDialog from "./Dialogs/AddLectureDialog";
 import { PiVideoFill } from "react-icons/pi";
 import { useRouter } from "next/navigation";
+import AddModuleDialog from "./Dialogs/AddModuleDialog";
 
-function ModuleList({ course }: any) {
-  const router = useRouter()
+function ModuleList({ course, profileInfo, setCurrentLessonToPlay }: any) {
+  const router = useRouter();
   const [courseModulesDetails, setCourseModulesDetails] = useState([]);
   const [openModule, setOpenModule] = useState(null);
   const [currentModuleToAddLecture, setCurrentModuleToAddLecture] = useState();
 
   const [isAddLectureDialogOpen, setIsAddLectureDialogOpen] = useState(false);
+  const [isAddModuleDialogOpen, setIsAddModuleDialogOpen] = useState(false);
 
   const handleToggleModule = (moduleId) => {
     setOpenModule(openModule === moduleId ? null : moduleId);
@@ -36,11 +38,10 @@ function ModuleList({ course }: any) {
     const toggleStatus = freePreviewCurrentStatus === true ? false : true;
     const response = await toggleFreePreviewAction(lessonId, toggleStatus);
 
-    if(response?.success === true){
-      router.refresh()
+    if (response?.success === true) {
+      router.refresh();
     }
   };
-
 
   useEffect(() => {
     fetchCourseDetails();
@@ -50,7 +51,7 @@ function ModuleList({ course }: any) {
     return <Loading />;
   }
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 sm:border-l sm:pl-3">
       {courseModulesDetails &&
         courseModulesDetails.map((module) => (
           <div
@@ -73,30 +74,37 @@ function ModuleList({ course }: any) {
                       key={lesson.id}
                       className="w-full bg-[#252525] p-3 rounded-md hover:bg-[#333333] transition duration-200 flex items-center gap-2 justify-between "
                     >
-                      <div className="flex items-center gap-2">
-                        <PiVideoFill className="text-white" />{" "}
-                        <span>{lesson.lessonTitle}</span>
-                      </div>
                       <div
-                        className={`self-end text-sm underline cursor-pointer ${
-                          lesson?.freePreview
-                            ? "text-red-500"
-                            : "text-green-600"
-                        }`}
-                        onClick={() =>
-                          togglePreview(lesson._id, lesson?.freePreview)
-                        }
+                        className="flex items-center gap-2 cursor-pointer"
+                        onClick={() => setCurrentLessonToPlay(lesson)}
                       >
-                        {lesson?.freePreview ? "Disable" : "Enable"} Free
-                        Preview
+                        <PiVideoFill className="text-white" />{" "}
+                        <span className="text-blue-300 font-semibold font-sans">
+                          {lesson.lessonTitle}
+                        </span>
                       </div>
+                      {profileInfo?._id === course?.instructor?._id && (
+                        <div
+                          className={`self-end text-sm underline cursor-pointer font-sans ${
+                            lesson?.freePreview
+                              ? "text-red-500"
+                              : "text-green-600"
+                          }`}
+                          onClick={() =>
+                            togglePreview(lesson._id, lesson?.freePreview)
+                          }
+                        >
+                          {lesson?.freePreview ? "Disable" : "Enable"} Free
+                          Preview
+                        </div>
+                      )}
                     </div>
                   ))
                 ) : (
                   <p className="text-gray-400">No lectures available.</p>
                 )}
 
-                {
+                {profileInfo?._id === course?.instructor?._id && (
                   <Button
                     className="px-3 py-1 bg-orange-600 hover:bg-orange-700 font-semibold self-center"
                     onClick={() => {
@@ -106,17 +114,29 @@ function ModuleList({ course }: any) {
                   >
                     Add Lecture
                   </Button>
-                }
+                )}
               </div>
             )}
           </div>
         ))}
+      <Button
+        className="px-3 py-1 bg-orange-600 hover:bg-orange-700 font-semibold self-center w-full"
+        onClick={() => setIsAddModuleDialogOpen(true)}
+      >
+        Add Module
+      </Button>
 
       <AddLectureDialog
         isAddLectureDialogOpen={isAddLectureDialogOpen}
         onClose={() => setIsAddLectureDialogOpen(false)}
         course={course}
         currentModuleToAddLecture={currentModuleToAddLecture}
+      />
+
+      <AddModuleDialog
+        course={course}
+        onClose={() => setIsAddModuleDialogOpen(false)}
+        isAddModuleDialogOpen={isAddModuleDialogOpen}
       />
     </div>
   );

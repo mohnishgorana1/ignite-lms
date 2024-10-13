@@ -9,7 +9,7 @@ import ModuleList from "./ModuleList";
 import { fetchCourseModulesAndLecturesAction } from "@/actions/course.action";
 import AddModuleDialog from "./Dialogs/AddModuleDialog";
 
-function CourseManagementComponent({ course }): any {
+function CourseManagementComponent({ course, profileInfo }): any {
   const {
     _id,
     instructor,
@@ -28,7 +28,6 @@ function CourseManagementComponent({ course }): any {
     useState(false);
   const [isManageStudentsDialogOpen, setIsManageStudentsDialogOpen] =
     useState(false);
-  const [isAddModuleDialogOpen, setIsAddModuleDialogOpen] = useState(false);
 
   return (
     <section className="space-y-5">
@@ -61,13 +60,11 @@ function CourseManagementComponent({ course }): any {
 
       <section className="border-t py-2 px-0">
         <div className="w-full flex flex-col gap-y-8">
-          <ModuleList course={course} />
-          <Button
-            className="px-3 py-1 bg-orange-600 hover:bg-orange-700 font-semibold self-center"
-            onClick={() => setIsAddModuleDialogOpen(true)}
-          >
-            Add Module
-          </Button>
+          <ModuleList
+            course={course}
+            profileInfo={profileInfo}
+            setCurrentLessonToPlay={null}
+          />
         </div>
       </section>
 
@@ -88,11 +85,7 @@ function CourseManagementComponent({ course }): any {
           onClose={() => setIsUpdateCourseDetailsDialogOpen(false)}
           isUpdateCourseDetailsDialogOpen={isUpdateCourseDetailsDialogOpen}
         />
-        <AddModuleDialog
-          course={course}
-          onClose={() => setIsAddModuleDialogOpen(false)}
-          isAddModuleDialogOpen={isAddModuleDialogOpen}
-        />
+       
       </>
     </section>
   );

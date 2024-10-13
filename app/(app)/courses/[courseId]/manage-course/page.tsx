@@ -63,6 +63,7 @@ async function ManageCourseByInstructorPage({
         <h1 className="font-light text-3xl text-pink-500">{title}</h1>
         <CourseManagementComponent
           course={JSON.parse(JSON.stringify(fetchedCourse.course))}
+          profileInfo={profileInfo}
         />
       </section>
     </main>
