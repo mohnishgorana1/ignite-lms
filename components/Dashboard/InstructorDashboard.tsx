@@ -5,6 +5,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Image from "next/image";
 import Link from "next/link";
 import { Button } from "../ui/button";
+import EnrollmentListSheet from "../EnrollmentListSheet";
+import { fetchSingleCourseEnrollmentAction } from "@/actions/course.action";
+import { toast } from "sonner";
 
 // can see enrolled courses
 function InstructorDashboard({
@@ -15,6 +18,20 @@ function InstructorDashboard({
   const [activeTab, setActiveTab] = useState<
     "createdCourses" | "enrolledCourses"
   >("createdCourses");
+  const [isEnrollmentListSheetOpen, setIsEnrollmentListSheetOpen] =
+    useState(false);
+  const [currentEnrollmentList, setCurrentEnrollmentsList] = useState();
+
+  const handleEnrollmentList = async (courseId: string) => {
+    const response = await fetchSingleCourseEnrollmentAction(courseId);
+    if (response?.success === true) {
+      setCurrentEnrollmentsList(response.enrollments);
+
+      setIsEnrollmentListSheetOpen(true);
+    } else {
+      toast.error("Can't find Enrollments");
+    }
+  };
 
   useEffect(() => {
     console.log("courses", createdCourses, enrolledCourses);
@@ -76,12 +93,12 @@ function InstructorDashboard({
                               </h1>
                               <h2 className="text-sm"> {category}</h2>
                             </div>
-                            <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+                            <div className="flex flex-col items-center justify-between gap-4">
                               <Link
                                 href={`/courses/${_id}/view-course`}
                                 className="w-full "
                               >
-                                <Button className="w-full h-8 sm:h-10 font-medium font-sans border border-pink-700 text-pink-700 hover:border-pink-600">
+                                <Button className="w-full h-8 font-medium font-sans border border-orange-300 text-orange-300 hover:border-orange-400 rounded-2xl">
                                   View Course
                                 </Button>
                               </Link>
@@ -89,10 +106,16 @@ function InstructorDashboard({
                                 href={`/courses/${_id}/manage-course`}
                                 className="w-full "
                               >
-                                <Button className="w-full h-8 sm:h-10 font-medium font-sans border border-pink-700 text-pink-700 hover:border-pink-600">
+                                <Button className="w-full h-8 font-medium font-sans border border-orange-300 text-orange-300 hover:border-orange-400 rounded-2xl">
                                   Manage Course
                                 </Button>
                               </Link>
+                              <Button
+                                onClick={() => handleEnrollmentList(_id)}
+                                className="w-full h-8 font-medium font-sans border border-orange-300 text-orange-300 hover:border-orange-400 rounded-2xl"
+                              >
+                                View Enrollments
+                              </Button>
                             </div>
                           </section>
                         </div>
@@ -148,6 +171,12 @@ function InstructorDashboard({
             </section>
           </TabsContent>
         </Tabs>
+
+        <EnrollmentListSheet
+          isEnrollmentListSheetOpen={isEnrollmentListSheetOpen}
+          onClose={() => setIsEnrollmentListSheetOpen(false)}
+          currentEnrollmentList={currentEnrollmentList}
+        />
       </section>
     </main>
   );

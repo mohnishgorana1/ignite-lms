@@ -318,3 +318,51 @@ export const fetchMyCourses = async (userId: string, role: string) => {
     };
   }
 };
+
+export const fetchSingleCourseEnrollmentAction = async (courseId: string) => {
+  await dbConnect();
+
+  if (!courseId) {
+    return {
+      status: 400,
+      success: false,
+      message: `Missing Course Id`,
+      enrollments: []
+    };
+  }
+
+  try {
+    const enrollments = await Enrollment.find({ course: courseId })
+      .populate({
+        path: "user",
+        model: "User",
+        select: "name email",
+      })
+      .exec();
+
+    if (!enrollments || enrollments.length === 0) {
+      return {
+        status: 500,
+        success: false,
+        message: `No student enrolled to your course`,
+        enrollments: [],
+      };
+    }
+    console.log("enrollment list", enrollments);
+    
+    return {
+      status: 200,
+      success: true,
+      message: `Course Enrollent List Fetched Successfully`,
+      enrollments: JSON.parse(JSON.stringify(enrollments)),
+    };
+  } catch (error) {
+    console.error("Error Fetching Course Enrollment List", error);
+    return {
+      status: 500,
+      success: false,
+      message: `Error Fetching Course Enrollment List`,
+      enrollments: [],
+    };
+  }
+};
