@@ -15,17 +15,8 @@ async function CourseDetailsPage({ params }: { params: { courseId: string } }) {
   const activeUser = await currentUser()
   const profileInfo = await fetchProfileAction(activeUser?.id);
 
-
-  const {
-    _id,
-    instructor,
-    title,
-    welcomeMessage,
-    description,
-    category,
-    pricing,
-    courseThumbnail,
-  } = fetchedCourse.course;
+  console.log("fetched course details", fetchedCourse.course.enrollments);
+  
 
   if (fetchedCourse.success) {
     return (

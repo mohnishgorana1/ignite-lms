@@ -31,7 +31,7 @@ function ViewCourseDashboard({ course, profileInfo }: any) {
         <video
           src={currentLessonToPlay?.lessonUrl?.secure_url}
           controls
-          className="w-full h-auto mb-4 rounded-xl"
+          className="w-full h-auto md:h-[400px] mb-4 rounded-xl"
         />
       </section>
       <section className="md:col-span-2">

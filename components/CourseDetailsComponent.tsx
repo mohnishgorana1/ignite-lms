@@ -1,10 +1,16 @@
+"use client";
 import Image from "next/image";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Button } from "./ui/button";
 import Link from "next/link";
-import { redirect } from "next/navigation";
+import { redirect, useRouter } from "next/navigation";
+import { createEnrollmentAction } from "@/actions/enrollment.action";
+import { toast } from "sonner";
+import { FiLoader } from "react-icons/fi";
 
 function CourseDetailsComponent({ course, profileInfo }: any) {
+  const router = useRouter();
+  const [isEnrolling, setIsEnrolling] = useState(false);
   const {
     _id,
     instructor,
@@ -14,7 +20,39 @@ function CourseDetailsComponent({ course, profileInfo }: any) {
     category,
     pricing,
     courseThumbnail,
+    enrollments,
   } = course;
+
+  const [isUserAlreadyEnrolled, setIsUserAlreadyEnrolled] = useState(false);
+
+  const enrollUserToCourse = async () => {
+    // TODO: add payment gateway route
+
+    // if payment success then enroll user
+    setIsEnrolling(true);
+    const response = await createEnrollmentAction(
+      course?._id,
+      profileInfo?._id,
+      profileInfo?.userAuthId,
+      `/courses/${course?._id}/view-course`
+    );
+
+    if (response?.success === true) {
+      toast.success("Enrollement Success");
+      router.push(`/courses/${course?._id}/view-course`);
+    } else {
+      toast.error("Enrollment Failed");
+    }
+
+    setIsEnrolling(false);
+  };
+
+  useEffect(() => {
+    const isEnrolled = enrollments.some(
+      (enrollment: any) => enrollment.user.toString() === profileInfo._id.toString()
+    );
+    setIsUserAlreadyEnrolled(isEnrolled)
+  },[course]);
 
   return (
     <main className="flex flex-col gap-y-8 sm:gap-y-8 w-full">
@@ -29,7 +67,9 @@ function CourseDetailsComponent({ course, profileInfo }: any) {
             {welcomeMessage}
           </h3>
           <span className="flex md:flex-col justify-between gap-y-2">
-            <p className="font-sans font-semibold brightness-125 text-white ">{category}</p>
+            <p className="font-sans font-semibold brightness-125 text-white ">
+              {category}
+            </p>
             {instructor._id === profileInfo._id && (
               <Link href={`/courses/${_id}/manage-course`} className="mt-5">
                 <Button className="h-8 border border-pink-500 text-pink-500 font-semibold hover:bg-pink-700 hover:text-white duration-200 ease-in-out">
@@ -55,11 +95,25 @@ function CourseDetailsComponent({ course, profileInfo }: any) {
               Price:
               <span className="font-bold"> ₹ {pricing}</span>
             </p>
-            <Link href={`/courses/${_id}/view-course`}>
-              <Button className="border border-green-500 text-green-500 font-semibold hover:bg-green-700 hover:text-white duration-200 ease-in-out">
-                Enroll Now
+            {isUserAlreadyEnrolled ? (
+              <Link href={`/courses/${_id}/view-course`}>
+                <Button className="disabled:cursor-not-allowed min-w-32 border border-green-500 text-green-500 font-semibold hover:bg-green-700 hover:text-white duration-200 ease-in-out">
+                  View Course
+                </Button>
+              </Link>
+            ) : (
+              <Button
+                onClick={enrollUserToCourse}
+                disabled={isEnrolling}
+                className="disabled:cursor-not-allowed min-w-32 border border-green-500 text-green-500 font-semibold hover:bg-green-700 hover:text-white duration-200 ease-in-out"
+              >
+                {isEnrolling ? (
+                  <FiLoader className="animate-spin" />
+                ) : (
+                  "Enroll Now"
+                )}
               </Button>
-            </Link>
+            )}
           </div>
         </div>
         <div className="md:col-span-5 flex flex-col gap-y-5">

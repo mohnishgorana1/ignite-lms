@@ -51,12 +51,12 @@ function ModuleList({ course, profileInfo, setCurrentLessonToPlay }: any) {
     return <Loading />;
   }
   return (
-    <div className="space-y-4 sm:border-l sm:pl-3">
+    <div className="space-y-4 sm:pl-3">
       {courseModulesDetails &&
         courseModulesDetails.map((module) => (
           <div
             key={module?._id}
-            className="bg-[#151515] p-4 rounded-lg shadow-lg hover:bg-[#090909]"
+            className="bg-[#151515] p-4 rounded-lg shadow-lg hover:bg-[#090909] "
           >
             <div
               onClick={() => handleToggleModule(module._id)}
@@ -72,7 +72,7 @@ function ModuleList({ course, profileInfo, setCurrentLessonToPlay }: any) {
                   module.lessons.map((lesson) => (
                     <div
                       key={lesson.id}
-                      className="w-full bg-[#252525] p-3 rounded-md hover:bg-[#333333] transition duration-200 flex items-center gap-2 justify-between "
+                      className="w-full bg-[#252525] p-3 rounded-md hover:bg-[#333333] transition duration-200 flex flex-col gap-2 justify-between "
                     >
                       <div
                         className="flex items-center gap-2 cursor-pointer"
@@ -119,12 +119,15 @@ function ModuleList({ course, profileInfo, setCurrentLessonToPlay }: any) {
             )}
           </div>
         ))}
-      <Button
-        className="px-3 py-1 bg-orange-600 hover:bg-orange-700 font-semibold self-center w-full"
-        onClick={() => setIsAddModuleDialogOpen(true)}
-      >
-        Add Module
-      </Button>
+
+      {profileInfo?._id === course?.instructor?._id && (
+        <Button
+          className="px-3 py-1 bg-orange-600 hover:bg-orange-700 font-semibold self-center w-full"
+          onClick={() => setIsAddModuleDialogOpen(true)}
+        >
+          Add Module
+        </Button>
+      )}
 
       <AddLectureDialog
         isAddLectureDialogOpen={isAddLectureDialogOpen}

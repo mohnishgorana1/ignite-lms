@@ -5,10 +5,16 @@ import Course from "@/models/course.model";
 import Module from "@/models/module.model"; // Ensure Module model is imported
 import Lesson from "@/models/lesson.model"; // Ensure Lesson model is imported
 import { revalidatePath } from "next/cache";
+import { Role } from "@/models/user.model";
+import Enrollment from "@/models/enrollment.model";
+import mongoose from "mongoose";
 
 export const fetchAllCourseAction = async () => {
   await dbConnect();
-  const courseList = await Course.find().populate("instructor").exec();
+  const courseList = await Course.find()
+    .populate("instructor")
+    .populate("enrollments")
+    .exec();
 
   if (!courseList) {
     return {
@@ -31,7 +37,10 @@ export const fetchAllCourseAction = async () => {
 
 export const fetchSingleCourseAction = async (courseId: string) => {
   await dbConnect();
-  const course = await Course.findById(courseId).populate("instructor").exec();
+  const course = await Course.findById(courseId)
+    .populate("instructor")
+    .populate("enrollments")
+    .exec();
 
   if (!course) {
     return {
@@ -223,7 +232,7 @@ export const toggleFreePreviewAction = async (
       lessonId,
       { freePreview: toggleStatus },
       { new: true }
-    )
+    );
 
     if (!lesson) {
       return {
@@ -235,7 +244,6 @@ export const toggleFreePreviewAction = async (
     }
 
     console.log("updated Lesson Free Preview", lesson);
-
 
     return {
       status: 200,
@@ -250,6 +258,63 @@ export const toggleFreePreviewAction = async (
       success: false,
       message: `Error Toggling Free Preview Status`,
       course: JSON.parse(JSON.stringify([])),
+    };
+  }
+};
+
+export const fetchMyCourses = async (userId: string, role: string) => {
+  if (!userId || !role) {
+    return {
+      status: 500,
+      success: false,
+      message: `Invalid | Missing Request Data`,
+      courses: JSON.parse(JSON.stringify([])),
+    };
+  }
+
+  await dbConnect();
+
+  try {
+    let enrolledCourses = [];
+    let createdCourses = [];
+
+    if (role === Role.INSTRUCTOR) {
+      createdCourses = await Course.find({
+        instructor: new mongoose.Types.ObjectId(userId),
+      }).select("title description courseThumbnail pricing");
+    }
+
+    const enrollments = await Enrollment.find({
+      user: new mongoose.Types.ObjectId(userId),
+    })
+      .select("course")
+      .populate({
+        path: "course",
+        select: "title description courseThumbnail pricing category",
+      });
+    console.log("enrollments", enrollments);
+
+    enrolledCourses = enrollments.map((enrollment) => enrollment.course); // because i need courses only
+
+    console.log("Created courses", createdCourses);
+    console.log("enrolled courses", enrolledCourses);
+
+    return {
+      status: 200,
+      success: true,
+      message: `Courses Fetched Successfully`,
+      enrolledCourses: JSON.parse(JSON.stringify(enrolledCourses)),
+      createdCourses: JSON.parse(JSON.stringify(createdCourses)),
+    };
+  } catch (error) {
+    console.error("Error Fetching Courses", error);
+
+    return {
+      status: 500,
+      success: false,
+      message: `Error Fetching Courses`,
+      enrolledCourses: JSON.parse(JSON.stringify([])),
+      createdCourses: JSON.parse(JSON.stringify([])),
     };
   }
 };

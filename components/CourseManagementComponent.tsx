@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Button } from "./ui/button";
 import ViewCourseDetailDialog from "./Dialogs/ViewCourseDetailDialog";
 import UpdateCoursePricingDialog from "./Dialogs/UpdateCoursePricingDialog";
@@ -58,7 +58,7 @@ function CourseManagementComponent({ course, profileInfo }): any {
         </Button>
       </header>
 
-      <section className="border-t py-2 px-0">
+      <section className="py-2 px-0">
         <div className="w-full flex flex-col gap-y-8">
           <ModuleList
             course={course}
@@ -85,7 +85,6 @@ function CourseManagementComponent({ course, profileInfo }): any {
           onClose={() => setIsUpdateCourseDetailsDialogOpen(false)}
           isUpdateCourseDetailsDialogOpen={isUpdateCourseDetailsDialogOpen}
         />
-       
       </>
     </section>
   );

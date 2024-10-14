@@ -60,7 +60,15 @@ async function ManageCourseByInstructorPage({
         </h2> */}
       </section>
       <section className="mt-8 space-y-4">
-        <h1 className="font-light text-3xl text-pink-500">{title}</h1>
+        <header className="flex flex-col md:flex-row md:items-baseline md:justify-between">
+          <h1 className="font-light text-3xl text-pink-500">{title}</h1>
+          <Link
+            href={`/courses/${_id}/view-course`}
+            className="text-lg underline text-orange-500 hover:text-orange-600"
+          >
+            View Course
+          </Link>
+        </header>
         <CourseManagementComponent
           course={JSON.parse(JSON.stringify(fetchedCourse.course))}
           profileInfo={profileInfo}
