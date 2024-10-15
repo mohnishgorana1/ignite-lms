@@ -19,12 +19,12 @@ export function HeroHighlightDemo() {
           duration: 0.5,
           ease: [0.4, 0.0, 0.2, 1],
         }}
-        className="text-6xl lg:text-7xl px-4 font-bold text-neutral-700 dark:text-white max-w-4xl lg:leading-snug mx-auto "
+        className="text-4xl lg:text-7xl px-4 font-bold text-neutral-700 dark:text-white max-w-4xl leading-relaxed lg:leading-snug mx-auto "
       >
         <Highlight className="text-black dark:text-white">
           Ignite Your <br />
         </Highlight>
-        Learning Journey
+        <span className="text-3xl lg:text-7xl">Learning Journey</span>
       </motion.h1>
     </HeroHighlight>
   );

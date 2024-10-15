@@ -67,7 +67,7 @@ export const HeroHighlight = ({
         <section className="sm:col-span-3 flex flex-col gap-y-3 items-start text-start justify-between">
           <p className="opacity-95 text-xl ml-3 font-bold">Join Us</p>
           <div>{children}</div>
-          <p className="text-xl opacity-65 text-justify ml-3 mb-3 pr-6">
+          <p className="text-xl opacity-65 text-justify ml-3 my-3 pr-6">
             Discover a powerful, flexible, and intuitive platform designed to
             fuel your growth. Whether you're a student or an instructor, Ignite
             LMS offers all the tools you need to create, explore, and succeed in
