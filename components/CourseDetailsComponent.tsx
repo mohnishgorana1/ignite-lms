@@ -34,7 +34,7 @@ function CourseDetailsComponent({ course, profileInfo }: any) {
       course?._id,
       profileInfo?._id,
       profileInfo?.userAuthId,
-      `/courses/${course?._id}/view-course`
+      `/courses/${course?._id}/view-course`,
     );
 
     if (response?.success === true) {

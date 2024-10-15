@@ -9,12 +9,17 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import Loading from "@/app/Loading";
 
 function EnrollmentListSheet({
   isEnrollmentListSheetOpen,
   onClose,
   currentEnrollmentList,
 }: any) {
+  
+  if(!currentEnrollmentList){
+    return <Loading />
+  }
   return (
     <Dialog open={isEnrollmentListSheetOpen} onOpenChange={onClose}>
       {/* Sheet content sliding from the right */}
@@ -28,7 +33,7 @@ function EnrollmentListSheet({
               <p className="">Total : {currentEnrollmentList.length}</p>
             </DialogTitle>
             <DialogDescription>
-              <div className="w-full px-4 flex flex-col flex-row gap-6">
+              <div className="w-full px-4 flex flex-col gap-6">
                 {currentEnrollmentList &&
                   currentEnrollmentList.map((enrollment) => {
                     return (
